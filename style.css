@@ -53,6 +53,10 @@ main {
     background: slategray;
 }
 
+.is-hidden {
+    display: none !important;
+}
+
 #guess {
     display: block;
     margin: auto;
@@ -62,6 +66,46 @@ main {
 }
 
 #guess:focus {
-    outline: none;
     box-shadow: 0 0 0 3px tomato;
+}
+
+.table {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    background: bisque;
+    padding: 1rem;
+}
+
+.deck,
+.revealed {
+    width: 120px;
+}
+
+#progress {
+    text-align: center;
+}
+
+#feedback {
+    min-height: 1.5em;
+    font-weight: bold;
+    text-align: center;
+}
+
+#restart {
+    display: block;
+    margin: 0 auto;
+    padding: 0.6rem 1.5rem;
+    font-weight: bold;
+    border: 3px solid black;
+    border-radius: 0.5rem;
+    background: black;
+    color: white;
+    cursor: pointer;
+}
+
+#restart:hover {
+    outline: 3px solid tomato;
+    outline-offset: 2px;
 }

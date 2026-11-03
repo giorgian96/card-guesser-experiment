@@ -17,8 +17,15 @@
         <main>
             <section id="play">
                 <h2>Play</h2>
+                <div class="table">
+                    <div class="revealed"><img id="revealed-img" alt="Last revealed card" class="is-hidden"></div>
+                    <div class="deck"><img id="deck-img" alt="Deck"></div>
+                </div>
+                <p id="progress"></p>
+                <p id="feedback"></p>
                 <input id="guess" list="card-names" placeholder="e.g. Ace of Spades" autocomplete="off">
                 <datalist id="card-names"></datalist>
+                <button id="restart" class="is-hidden">Restart</button>
             </section>
 
             <div class="separator">OR</div>

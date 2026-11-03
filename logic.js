@@ -64,6 +64,7 @@ class Game {
     deck = new Deck();
     revealed = [];
     hitCount = 0;
+    total = Deck.allCards().length;
     get hits() {
         return this.hitCount;
     }
@@ -76,7 +77,7 @@ class Game {
     guess(card) {
         const revealed = this.deck.draw();
         if (revealed === undefined) {
-            throw new Error("The round is over");
+            throw new Error("The game is over");
         }
         this.revealed.push(revealed);
         const hit = revealed === card;
@@ -91,12 +92,25 @@ class GameView {
     static CARD_BACK = `${GameView.CARDS_DIR}Card_back_red.svg`;
     input;
     datalist;
+    deckImg;
+    revealedImg;
+    progress;
+    feedback;
+    restartButton;
     constructor(game) {
         this.game = game;
         this.input = GameView.require("#guess");
         this.datalist = GameView.require("#card-names");
+        this.deckImg = GameView.require("#deck-img");
+        this.revealedImg = GameView.require("#revealed-img");
+        this.progress = GameView.require("#progress");
+        this.feedback = GameView.require("#feedback");
+        this.restartButton = GameView.require("#restart");
+        this.deckImg.src = GameView.CARD_BACK;
         this.fillDatalist();
         this.input.addEventListener("keydown", (event) => this.onKeyDown(event));
+        this.restartButton.addEventListener("click", () => this.restart());
+        this.updateProgress();
     }
     static require(selector) {
         const element = document.querySelector(selector);
@@ -104,6 +118,9 @@ class GameView {
             throw new Error(`${selector} not found`);
         }
         return element;
+    }
+    static setVisible(element, visible) {
+        element.classList.toggle("is-hidden", !visible);
     }
     fillDatalist() {
         for (const card of Deck.allCards()) {
@@ -121,8 +138,37 @@ class GameView {
             return;
         }
         const { revealed, hit } = this.game.guess(card);
-        alert(`Guessed ${card.name}, revealed ${revealed.name}: ${hit ? "HIT" : "miss"}`);
+        this.showRevealed(revealed);
+        this.updateProgress();
+        this.showFeedback(hit);
+        this.updateControls();
         this.input.value = "";
+    }
+    showRevealed(card) {
+        this.revealedImg.src = GameView.CARDS_DIR + card.filename;
+        this.revealedImg.alt = card.name;
+        GameView.setVisible(this.revealedImg, true);
+        GameView.setVisible(this.deckImg, !this.game.isOver);
+    }
+    updateProgress() {
+        const { revealedCards, total, hits } = this.game;
+        this.progress.textContent = `Revealed: ${revealedCards.length} of ${total} | Hits: ${hits}`;
+    }
+    showFeedback(hit) {
+        this.feedback.textContent = hit ? "Hit! 🔮" : "Miss 🤷";
+    }
+    updateControls() {
+        GameView.setVisible(this.input, !this.game.isOver);
+        GameView.setVisible(this.restartButton, this.game.isOver);
+    }
+    restart() {
+        this.game = new Game();
+        GameView.setVisible(this.deckImg, true);
+        GameView.setVisible(this.revealedImg, false);
+        this.feedback.textContent = "";
+        this.updateProgress();
+        this.updateControls();
+        this.input.focus();
     }
 }
 new GameView(new Game());

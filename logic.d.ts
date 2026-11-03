@@ -25,6 +25,7 @@ declare class Game {
     private readonly deck;
     private readonly revealed;
     private hitCount;
+    readonly total: number;
     get hits(): number;
     get revealedCards(): readonly Card[];
     get isOver(): boolean;
@@ -34,14 +35,25 @@ declare class Game {
     };
 }
 declare class GameView {
-    private readonly game;
+    private game;
     static readonly CARDS_DIR = "playing cards/";
     static readonly CARD_BACK: string;
     private readonly input;
     private readonly datalist;
+    private readonly deckImg;
+    private readonly revealedImg;
+    private readonly progress;
+    private readonly feedback;
+    private readonly restartButton;
     constructor(game: Game);
     private static require;
+    private static setVisible;
     private fillDatalist;
     private onKeyDown;
+    private showRevealed;
+    private updateProgress;
+    private showFeedback;
+    private updateControls;
+    private restart;
 }
 //# sourceMappingURL=logic.d.ts.map
