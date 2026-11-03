@@ -47,6 +47,14 @@ class Deck {
         return Deck.BY_NAME.get(input.trim().toLowerCase());
     }
 
+    static randomCard(): Card {
+        const card = Deck.ALL[Math.floor(Math.random() * Deck.ALL.length)];
+        if (card === undefined) {
+            throw new Error("No cards available");
+        }
+        return card;
+    }
+
     private cards: Card[] = [...Deck.ALL];
 
     constructor() {
@@ -111,6 +119,8 @@ class Game {
 class GameView {
     static readonly CARDS_DIR = "playing cards/";
     static readonly CARD_BACK = `${GameView.CARDS_DIR}Card_back_red.svg`;
+    
+    private static readonly SIMULATION_DELAY_MS = 200;
 
     private readonly input: HTMLInputElement;
     private readonly datalist: HTMLDataListElement;
@@ -119,6 +129,9 @@ class GameView {
     private readonly progress: HTMLElement;
     private readonly feedback: HTMLElement;
     private readonly restartButton: HTMLButtonElement;
+    private readonly simulateButton: HTMLButtonElement;
+
+    private simulating = false;
 
     constructor(private game: Game) {
         this.input = GameView.require<HTMLInputElement>("#guess");
@@ -128,12 +141,14 @@ class GameView {
         this.progress = GameView.require<HTMLElement>("#progress");
         this.feedback = GameView.require<HTMLElement>("#feedback");
         this.restartButton = GameView.require<HTMLButtonElement>("#restart");
-
+        this.simulateButton = GameView.require<HTMLButtonElement>("#simulate-btn");
+        
         this.deckImg.src = GameView.CARD_BACK;
-
+        
         this.fillDatalist();
         this.input.addEventListener("keydown", (event) => this.onKeyDown(event));
         this.restartButton.addEventListener("click", () => this.restart());
+        this.simulateButton.addEventListener("click", () => this.simulate());
         this.updateProgress();
     }
 
@@ -166,12 +181,16 @@ class GameView {
             return;
         }
 
+        this.input.value = "";
+        this.play(card);
+    }
+
+    private play(card: Card): void {
         const { revealed, hit } = this.game.guess(card);
         this.showRevealed(revealed);
         this.updateProgress();
         this.showFeedback(hit);
         this.updateControls();
-        this.input.value = "";
     }
 
     private showRevealed(card: Card): void {
@@ -191,7 +210,7 @@ class GameView {
     }
 
     private updateControls(): void {
-        GameView.setVisible(this.input, !this.game.isOver);
+        GameView.setVisible(this.input, !this.game.isOver && !this.simulating);
         GameView.setVisible(this.restartButton, this.game.isOver);
     }
 
@@ -203,6 +222,22 @@ class GameView {
         this.updateProgress();
         this.updateControls();
         this.input.focus();
+    }
+
+    private simulate(): void {
+        this.restart();
+        this.simulating = true;
+        this.simulateButton.disabled = true;
+        this.updateControls();
+
+        const timer = window.setInterval(() => {
+            this.play(Deck.randomCard());
+            if (this.game.isOver) {
+                window.clearInterval(timer);
+                this.simulating = false;
+                this.simulateButton.disabled = false;
+            }
+        }, GameView.SIMULATION_DELAY_MS);
     }
 }
 

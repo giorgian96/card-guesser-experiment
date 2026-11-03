@@ -36,6 +36,13 @@ class Deck {
     static find(input) {
         return Deck.BY_NAME.get(input.trim().toLowerCase());
     }
+    static randomCard() {
+        const card = Deck.ALL[Math.floor(Math.random() * Deck.ALL.length)];
+        if (card === undefined) {
+            throw new Error("No cards available");
+        }
+        return card;
+    }
     cards = [...Deck.ALL];
     constructor() {
         this.shuffle();
@@ -90,6 +97,7 @@ class GameView {
     game;
     static CARDS_DIR = "playing cards/";
     static CARD_BACK = `${GameView.CARDS_DIR}Card_back_red.svg`;
+    static SIMULATION_DELAY_MS = 200;
     input;
     datalist;
     deckImg;
@@ -97,6 +105,8 @@ class GameView {
     progress;
     feedback;
     restartButton;
+    simulateButton;
+    simulating = false;
     constructor(game) {
         this.game = game;
         this.input = GameView.require("#guess");
@@ -106,10 +116,12 @@ class GameView {
         this.progress = GameView.require("#progress");
         this.feedback = GameView.require("#feedback");
         this.restartButton = GameView.require("#restart");
+        this.simulateButton = GameView.require("#simulate-btn");
         this.deckImg.src = GameView.CARD_BACK;
         this.fillDatalist();
         this.input.addEventListener("keydown", (event) => this.onKeyDown(event));
         this.restartButton.addEventListener("click", () => this.restart());
+        this.simulateButton.addEventListener("click", () => this.simulate());
         this.updateProgress();
     }
     static require(selector) {
@@ -137,12 +149,15 @@ class GameView {
             alert("Not a valid card");
             return;
         }
+        this.input.value = "";
+        this.play(card);
+    }
+    play(card) {
         const { revealed, hit } = this.game.guess(card);
         this.showRevealed(revealed);
         this.updateProgress();
         this.showFeedback(hit);
         this.updateControls();
-        this.input.value = "";
     }
     showRevealed(card) {
         this.revealedImg.src = GameView.CARDS_DIR + card.filename;
@@ -158,7 +173,7 @@ class GameView {
         this.feedback.textContent = hit ? "Hit! 🔮" : "Miss 🤷";
     }
     updateControls() {
-        GameView.setVisible(this.input, !this.game.isOver);
+        GameView.setVisible(this.input, !this.game.isOver && !this.simulating);
         GameView.setVisible(this.restartButton, this.game.isOver);
     }
     restart() {
@@ -169,6 +184,20 @@ class GameView {
         this.updateProgress();
         this.updateControls();
         this.input.focus();
+    }
+    simulate() {
+        this.restart();
+        this.simulating = true;
+        this.simulateButton.disabled = true;
+        this.updateControls();
+        const timer = window.setInterval(() => {
+            this.play(Deck.randomCard());
+            if (this.game.isOver) {
+                window.clearInterval(timer);
+                this.simulating = false;
+                this.simulateButton.disabled = false;
+            }
+        }, GameView.SIMULATION_DELAY_MS);
     }
 }
 new GameView(new Game());

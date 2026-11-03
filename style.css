@@ -105,7 +105,25 @@ main {
     cursor: pointer;
 }
 
-#restart:hover {
+button:hover {
     outline: 3px solid tomato;
     outline-offset: 2px;
+}
+
+#simulate-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 0.6rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background: black;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+#simulate-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
 }

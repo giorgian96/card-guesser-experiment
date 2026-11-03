@@ -15,6 +15,7 @@ declare class Deck {
     private static createAll;
     static allCards(): readonly Card[];
     static find(input: string): Card | undefined;
+    static randomCard(): Card;
     private cards;
     constructor();
     get size(): number;
@@ -38,6 +39,7 @@ declare class GameView {
     private game;
     static readonly CARDS_DIR = "playing cards/";
     static readonly CARD_BACK: string;
+    private static readonly SIMULATION_DELAY_MS;
     private readonly input;
     private readonly datalist;
     private readonly deckImg;
@@ -45,15 +47,19 @@ declare class GameView {
     private readonly progress;
     private readonly feedback;
     private readonly restartButton;
+    private readonly simulateButton;
+    private simulating;
     constructor(game: Game);
     private static require;
     private static setVisible;
     private fillDatalist;
     private onKeyDown;
+    private play;
     private showRevealed;
     private updateProgress;
     private showFeedback;
     private updateControls;
     private restart;
+    private simulate;
 }
 //# sourceMappingURL=logic.d.ts.map
