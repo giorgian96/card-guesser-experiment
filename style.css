@@ -52,3 +52,16 @@ main {
     height: 3px;
     background: slategray;
 }
+
+#guess {
+    display: block;
+    margin: auto;
+    padding: 0.5rem 0.8rem;
+    border: 3px solid black;
+    border-radius: 0.5rem;
+}
+
+#guess:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px tomato;
+}
