@@ -1,6 +1,3 @@
-const CARDS_DIR = "playing cards/";
-const CARD_BACK = `${CARDS_DIR}Card_back_red.svg`;
-
 type Suit = typeof Card.SUITS[number];
 type Rank = typeof Card.RANKS[number];
 
@@ -66,7 +63,7 @@ class Deck {
 
     // Fisher-Yates
     private shuffle(): void {
-        for (let i = this.cards.length - 1; i > 0; i--) {
+        for (let i = this.size - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             const a = this.cards[i];
             const b = this.cards[j];
@@ -146,12 +143,12 @@ class GameView {
 
         const card = Deck.find(this.input.value);
         if (card === undefined) {
-            console.log("Not a valid card");
+            alert("Not a valid card");
             return;
         }
 
         const { revealed, hit } = this.game.guess(card);
-        console.log(`Guessed ${card.name}, revealed ${revealed.name}:`, hit ? "HIT" : "miss");
+        alert(`Guessed ${card.name}, revealed ${revealed.name}: ${hit ? "HIT" : "miss"}`);
         this.input.value = "";
     }
 }

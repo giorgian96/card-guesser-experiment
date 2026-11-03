@@ -1,5 +1,3 @@
-declare const CARDS_DIR = "playing cards/";
-declare const CARD_BACK = "playing cards/Card_back_red.svg";
 type Suit = typeof Card.SUITS[number];
 type Rank = typeof Card.RANKS[number];
 declare class Card {
