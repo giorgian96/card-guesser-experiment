@@ -85,13 +85,21 @@ class Deck {
 }
 
 class Game {
+    private static readonly EXACT_GUESS_POINTS = 3;
+    private static readonly PARTIAL_GUESS_POINTS = 1;
+
     private readonly deck = new Deck();
     private readonly revealed: Card[] = [];
     private hitCount = 0;
+    private pointTotal = 0;
     readonly total = Deck.allCards().length;
 
     get hits(): number {
         return this.hitCount;
+    }
+
+    get points(): number {
+        return this.pointTotal;
     }
 
     get revealedCards(): readonly Card[] {
@@ -102,7 +110,7 @@ class Game {
         return this.deck.size === 0;
     }
 
-    guess(card: Card): { revealed: Card; hit: boolean } {
+    guess(card: Card): { revealed: Card; hit: boolean; points: number } {
         const revealed = this.deck.draw();
         if (revealed === undefined) {
             throw new Error("The game is over");
@@ -112,7 +120,18 @@ class Game {
         const hit = revealed === card;
         if (hit) this.hitCount++;
 
-        return { revealed, hit };
+        const points = Game.score(card, revealed);
+        this.pointTotal += points;
+
+        return { revealed, hit, points };
+    }
+
+    private static score(guess: Card, revealed: Card): number {
+        if (guess === revealed) return Game.EXACT_GUESS_POINTS;
+        if (guess.rank === revealed.rank || guess.suit === revealed.suit) {
+            return Game.PARTIAL_GUESS_POINTS;
+        }
+        return 0;
     }
 }
 
@@ -186,10 +205,10 @@ class GameView {
     }
 
     private play(card: Card): void {
-        const { revealed, hit } = this.game.guess(card);
+        const { revealed, hit, points } = this.game.guess(card);
         this.showRevealed(revealed);
         this.updateProgress();
-        this.showFeedback(hit);
+        this.showFeedback(hit, points);
         this.updateControls();
     }
 
@@ -201,12 +220,12 @@ class GameView {
     }
 
     private updateProgress(): void {
-        const { revealedCards, total, hits } = this.game;
-        this.progress.textContent = `Revealed: ${revealedCards.length} of ${total} | Hits: ${hits}`;
+        const { revealedCards, total, hits, points } = this.game;
+        this.progress.textContent = `Revealed: ${revealedCards.length} of ${total} | Hits: ${hits} | Points: ${points}`;
     }
 
-    private showFeedback(hit: boolean): void {
-        this.feedback.textContent = hit ? "Hit! 🔮" : "Miss 🤷";
+    private showFeedback(hit: boolean, points: number): void {
+        this.feedback.textContent = `${hit ? "Hit! 🔮" : "Miss 🤷"} +${points}`;
     }
 
     private updateControls(): void {

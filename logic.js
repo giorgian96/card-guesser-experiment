@@ -68,12 +68,18 @@ class Deck {
     }
 }
 class Game {
+    static EXACT_GUESS_POINTS = 3;
+    static PARTIAL_GUESS_POINTS = 1;
     deck = new Deck();
     revealed = [];
     hitCount = 0;
+    pointTotal = 0;
     total = Deck.allCards().length;
     get hits() {
         return this.hitCount;
+    }
+    get points() {
+        return this.pointTotal;
     }
     get revealedCards() {
         return this.revealed;
@@ -90,7 +96,17 @@ class Game {
         const hit = revealed === card;
         if (hit)
             this.hitCount++;
-        return { revealed, hit };
+        const points = Game.score(card, revealed);
+        this.pointTotal += points;
+        return { revealed, hit, points };
+    }
+    static score(guess, revealed) {
+        if (guess === revealed)
+            return Game.EXACT_GUESS_POINTS;
+        if (guess.rank === revealed.rank || guess.suit === revealed.suit) {
+            return Game.PARTIAL_GUESS_POINTS;
+        }
+        return 0;
     }
 }
 class GameView {
@@ -153,10 +169,10 @@ class GameView {
         this.play(card);
     }
     play(card) {
-        const { revealed, hit } = this.game.guess(card);
+        const { revealed, hit, points } = this.game.guess(card);
         this.showRevealed(revealed);
         this.updateProgress();
-        this.showFeedback(hit);
+        this.showFeedback(hit, points);
         this.updateControls();
     }
     showRevealed(card) {
@@ -166,11 +182,11 @@ class GameView {
         GameView.setVisible(this.deckImg, !this.game.isOver);
     }
     updateProgress() {
-        const { revealedCards, total, hits } = this.game;
-        this.progress.textContent = `Revealed: ${revealedCards.length} of ${total} | Hits: ${hits}`;
+        const { revealedCards, total, hits, points } = this.game;
+        this.progress.textContent = `Revealed: ${revealedCards.length} of ${total} | Hits: ${hits} | Points: ${points}`;
     }
-    showFeedback(hit) {
-        this.feedback.textContent = hit ? "Hit! 🔮" : "Miss 🤷";
+    showFeedback(hit, points) {
+        this.feedback.textContent = `${hit ? "Hit! 🔮" : "Miss 🤷"} +${points}`;
     }
     updateControls() {
         GameView.setVisible(this.input, !this.game.isOver && !this.simulating);

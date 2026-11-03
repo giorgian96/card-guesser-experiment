@@ -23,17 +23,23 @@ declare class Deck {
     private shuffle;
 }
 declare class Game {
+    private static readonly EXACT_GUESS_POINTS;
+    private static readonly PARTIAL_GUESS_POINTS;
     private readonly deck;
     private readonly revealed;
     private hitCount;
+    private pointTotal;
     readonly total: number;
     get hits(): number;
+    get points(): number;
     get revealedCards(): readonly Card[];
     get isOver(): boolean;
     guess(card: Card): {
         revealed: Card;
         hit: boolean;
+        points: number;
     };
+    private static score;
 }
 declare class GameView {
     private game;
