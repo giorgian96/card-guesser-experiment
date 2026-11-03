@@ -1,0 +1,22 @@
+{
+  "name": "card-guesser-experiment",
+  "version": "1.0.0",
+  "description": "Card guessing experiment to familiarize myself with probabilities",
+  "homepage": "https://github.com/giorgian96/card-guesser-experiment",
+  "bugs": {
+    "url": "https://github.com/giorgian96/card-guesser-experiment/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giorgian96/card-guesser-experiment.git"
+  },
+  "license": "ISC",
+  "author": "Robescu Giorgian Valentin",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
