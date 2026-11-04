@@ -23,8 +23,8 @@ class Deck {
     static BY_NAME = new Map(Deck.ALL.map((card) => [card.name.toLowerCase(), card]));
     static createAll() {
         const cards = [];
-        for (const suit of Card.SUITS) {
-            for (const rank of Card.RANKS) {
+        for (const rank of Card.RANKS) {
+            for (const suit of Card.SUITS) {
                 cards.push(new Card(rank, suit));
             }
         }

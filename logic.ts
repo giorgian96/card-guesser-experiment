@@ -31,8 +31,8 @@ class Deck {
 
     private static createAll(): Card[] {
         const cards: Card[] = [];
-        for (const suit of Card.SUITS) {
-            for (const rank of Card.RANKS) {
+        for (const rank of Card.RANKS) {
+            for (const suit of Card.SUITS) {
                 cards.push(new Card(rank, suit));
             }
         }
